@@ -36,7 +36,7 @@ def MFO(nsa, dim, ub, lb, max_iter, fobj):
 
         if iteration == 0:
             # Sort the first population of moths
-            order = mothFit.argsort()
+            order = mothFit.argsort(axis=0)
             mothFit = mothFit[order]
             mothPos = mothPos[order, :]
 
