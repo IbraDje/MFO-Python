@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 
 
 def MFO(nsa, dim, ub, lb, max_iter, fobj):
+# def MFO(nsa, dim, ub, lb, shift, max_iter, fobj):
     ''' Main function
     Parameters :
     - nsa : Number of Search Agents
@@ -18,7 +19,7 @@ def MFO(nsa, dim, ub, lb, max_iter, fobj):
     '''
 
     # Initialize the positions of moths
-    mothPos = np.random.uniform(low=lb, high=ub, size=(nsa, dim))
+    mothPos = np.random.uniform(low=lb, high=ub, size=(nsa, dim))  # + np.ones((nsa, dim))*shift
 
     convergenceCurve = np.zeros(shape=(max_iter))
 
@@ -49,7 +50,7 @@ def MFO(nsa, dim, ub, lb, max_iter, fobj):
             doublePop = np.vstack((bFlames, mothPos))
             doubleFit = np.hstack((bFlamesFit, mothFit))
 
-            order = doubleFit.argsort()
+            order = doubleFit.argsort(axis=0)
             doubleFit = doubleFit[order]
             doublePop = doublePop[order, :]
 
@@ -94,17 +95,32 @@ def F2(x):
 
 
 def F3(x):
+    ''' F3 function as defined in the paper for the test '''
     o = 0
     for i in range(x.shape[1]):
         o += np.power(np.sum(x[:, :i], axis=1), 2)
     return o
 
 
+def F4(x):
+    ''' F4 function as defined in the paper for the test '''
+    return np.max(x, axis=1)
+
+
+def F5(x):
+    ''' F5 function as defined in the paper for the test '''
+    o = 0
+    for i in range(x.shape[1]-1):
+        o += 100*np.power((x[:, i+1] - np.power(x[:, i], 2)), 2) + np.power(x[:, i] - 1, 2)
+    return o
+
 def F6(x):
-    return np.sum(np.power(np.abs(x+0.5), 2), axis=1)
+    ''' F6 function as defined in the paper for the test '''
+    return np.sum(np.power(x+0.5, 2), axis=1)
 
 
 def F7(x):
+    ''' F7 function as defined in the paper for the test '''
     n = np.arange(1, x.shape[1]+1, 1)
     return np.sum(n*np.power(x, 4), axis=1) + np.random.rand(x.shape[0])
 
@@ -117,12 +133,15 @@ if __name__ == '__main__':
     lb = -100
     ub = 100
     dim = 10
+    # shift = -30
 
     # bFlameScore, bFlamesPos, convergenceCurve = MFO(
-    #     nsa, dim, ub, lb, max_iter, F2)
+    #     nsa, dim, ub, lb, max_iter, F6)
     # print(bFlameScore, '\n', bFlamesPos)
     # x = np.arange(0, convergenceCurve.shape[0], 1)
     # plt.plot(x, convergenceCurve)
+    # plt.xlabel('Iterations')
+    # plt.ylabel('Convergence Curve')
     # plt.show()
 
     bFlameScore = np.zeros(10)
@@ -132,4 +151,6 @@ if __name__ == '__main__':
     print('Standard deviation :', np.std(bFlameScore))
     x = np.arange(0, 10, 1)
     plt.plot(x, bFlameScore)
+    plt.xlabel('Run #')
+    plt.ylabel('Best Flame Score')
     plt.show()
